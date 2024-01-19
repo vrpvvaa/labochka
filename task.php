@@ -1,4 +1,31 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задания</title>
+</head>
+<body>
+
+<div id="timer">
+<pre>Бомба взорвется через: <span id="seconds">60</span> секунд</pre>
+</div>
+<style>
+    #timer{
+    color: #434343;
+    font-size: 25px;
+    display: flex;
+    justify-content: flex-end;
+}
+body{
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,0.6991247182466737) 0%, rgba(148,187,233,0.362990264465161) 100%);}
+</style>
 <?php
 
 function random ($min, $max) {
@@ -31,8 +58,8 @@ $var6 = 0;
 $tasks = [
     "Необходимо перевести значение $var1 из 2сс в 10сс. В качество ответа указать число",
     "Какой минимальный объём памяти (в Кбайт) нужно зарезервировать, чтобы можно было сохранить 
-    любое растровое изображение размером $var2 × $var3 пикселей при условии, 
-    что в изображении могут использоваться 256 различных цветов? 
+    любое растровое изображение размером $var2 x $var3 пикселей при условии, 
+    что в изображении могут использоваться $var4 различных цветов? 
     В ответе запишите только целое число, единицу измерения писать не нужно.",
     "Напишите колличество вхождений символа $var5 в следующем тексте <pre> 
     Я вас любил: любовь еще, быть может, 
@@ -117,77 +144,114 @@ function randPoem($poems) {
 return $poems[array_rand($poems)];
 }
 
+function logNum($var2, $var3, $var4){
+
+    $logI = log($var4, 2);
+    $bit = $var2*$var3*$logI;
+     return $kbite = floor($bit/(8*1024));
+    
+};
+
+function letterInPoem($var5, $var6) {
+    $randomLetter = mb_strtolower(strval($var5));
+    $lettersArray = mb_str_split(mb_strtolower($var6));
+    $count = 0;
+
+    foreach ($lettersArray as $letter) {
+        if ($letter === $randomLetter) {
+            $count++;
+        }
+    }
+    return $count;
+}
+
 ?>
 <form method="get">
     <?php
-
-for($i=0; $i<4; $i++){
-    switch($_GET['task']){
-        case 0:
-            $var1 = get2SS(random(2,5));
-            echo "<p>Необходимо перевести значение $var1 из 2СС в 10СС. В качестве ответа указать число. </p>";
-            $result = base_convert(strval($var1),2,10);
-            echo $result;
-            echo "<input type='hidden' id='ans$i' value='$result' >";
-            echo "<label>Ответ:</label><input type='number' id='ans_user$i' name='ans_user$i'> <br>";
-            break;
-
-            case 1: 
-                $var2 = imgSize(random(128,256)); 
-                $var3 = imgSize(random(128,256)); 
-                 
-                $var4 = randColor($randomElementsArray); 
-                echo "<p>Какой минимальный объем памяти нужно зарезервировать, чтобы можно было сохранить любое растроое изображение размером $var2 x $var3 пикселей при условии, что в изображении могут использоваться $var4 различных цветов?</p>"; 
-                echo "<label>Ответ:</label><input type='number'> <br>"; 
-                     
-                break; 
-
+    
+        for($i=0;$i<4;$i++) {
+            switch($_GET['task']) {
+                
+                case 0:
+                    $var1 = get2SS(random(2,5));
+                    echo "<p>Необходимо перевести значение $var1 из 2СС в 10СС. В качестве ответа указать число.</p>";
+                    $result = base_convert(strval($var1),2,10);
+                    // echo $result;
+                    echo "<label>Ответ:</label><input type='number' id='ans_user$i' name='ans_user$i'> <br>";
+                    echo "<input type='hidden' id='ans$i' value='$result'>";
+                    echo "<p id='val$i'></p>";
+                    break;
+                case 1:
+                    $var2 = imgSize(random(128,256));
+                    $var3 = imgSize(random(128,256));
+                    $var4 = randColor($randomElementsArray);
+                    
+                    echo "<p>Какой минимальный объем памяти нужно зарезервировать, чтобы можно было сохранить любое растроое изображение размером $var2 x $var3 пикселей при условии, что в изображении могут использоваться $var4 различных цветов?</p>";
+                    echo "<label>Ответ:</label><input type='number' id='ans_user$i' name='ans_user$i'> <br>";
+                    echo "<input type='hidden' id='ans$i' value= '".logNum($var2, $var3, $var4)."'>";
+                    
+                    echo "<p id='val$i'></p>";
+                        
+                    break;
+                
                 case 2: 
                     $var5 = randletter ($letters); 
                     $var6 = randPoem($poems); 
                     echo "<p>Напишите колличество вхождений символа $var5 в следующем тексте <pre> 
                     $var6 
                     </pre> Записать число вхождений $var5</p>"; 
-                    echo "<label>Ответ:</label><input type='number'  name='pole'>   <br>"; 
-        
+                    echo "<label>Ответ:</label><input type='number' id='ans_user$i' name='ans_user$i'>   <br>"; 
+                    echo "<input type='hidden' id='ans$i' value= '".letterInPoem($var5,$var6)."'>";
+                    echo "<p id='val$i'></p>";
                     break;
             }
         }
+        
+         echo "<input type='button' value='Отправить' id='btn'> ";
+    ?>
+        
+        <!-- <button>Отправить</button>
+        <input type="text" value="<?=$ans_user0?> <?=$ans_user1?> <?=$ans_user2?> <?=$ans_user3?>" readonly> -->
+</form>
 
-    echo "<input type='button' value='ok' id='btn'>";
- 
-?> 
+    <script>
+        var seconds = 60;
+        var intervalId = setInterval(function () {
+            document.getElementById("seconds").innerHTML = seconds;
+            if (seconds == 0) {
+                clearInterval(intervalId);
+                alert("БУМ!");
+            } else {
+                seconds--;
+            }
+        }, 1000);
 
-                <!-- <button>Отправить</button>
-                <input type="text" value="<?=$ans_user0?> <?=$ans_user1?> <?=$ans_user2?> <?=$ans_user3?>" readonly> -->
-                </form>
-
-                <script>
-        let btn =document.getElementById("btn");
-
-       
+        let btn = document.getElementById("btn");
+     
         btn.addEventListener("click",()=>{
+                clearInterval(intervalId);
 
-                        // for ($i=0; $i<4;$i++)
+                for (let i=0; i<4;i++){
+                    let ans = document.getElementById(`ans${i}`).value;
+                    let ans_user = document.getElementById(`ans_user${i}`).value;
+                     console.log(ans);
+                    console.log(ans_user);
+                    document.getElementById(`val${i}`).innerText = `Правильный ответ: ${ans}`;
 
-                            
-                            let ans = document.getElementById("ans0").value;
-                            let ans_user = document.getElementById("ans_user0").value;
-                            console.log(ans);
-                            console.log(ans_user);
+                    if(ans==ans_user){
+                        document.getElementById(`ans_user${i}`).style.color = 'green'; 
+                    }
+                    else {
+                        document.getElementById(`ans_user${i}`).style.color = 'red'; 
+                    }
+            }
+        })
+       
 
-                            if(ans==ans_user){
-                                return document.getElementById("ans_user0").style.color = 'green'; 
-                                
-                                
-                            }else{
-                                return document.getElementById("ans_user0").style.color = 'red';
-                            };
-
-
-                        })
     </script>  
+
     <!-- <?php print(date( "l dS of F Y h:i:s A" )); ?> -->
+
     
-</body>
+    </body>
 </html>
